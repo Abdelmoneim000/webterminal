@@ -1,0 +1,20 @@
+{
+  "name": "webterminal",
+  "version": "1.0.0",
+  "description": "A webterminal connected to a remote server using Xtrem",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "abdelmoneim000",
+  "license": "ISC",
+  "dependencies": {
+    "@xterm/xterm": "^5.5.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "fs": "^0.0.1-security",
+    "ssh2": "^1.15.0",
+    "utf8": "^3.0.0",
+    "ws": "^8.18.0"
+  }
+}
