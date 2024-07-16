@@ -24,7 +24,7 @@ This is a simple web terminal that uses xterm.js and node-pty to create a termin
 > [!NOTE]
 > Right now, the terminal interface is not fully functional. You need to adjust its functionality inside the index.js file and use custom styling as needed.
 
-> [!ATTENTION]
+> [!IMPORTANT]
 > Inside index.js file, line 26, you need to follow the comments to successfully send the command to the server.
 
 ## Contributors:
