@@ -13,15 +13,19 @@ async function sending(sock, input, terminal) {
     });
 }
 
-
+// Create a new terminal instance
 var term = new Terminal({
     convertEol: true
 });
 term.open(Xterm);
 term.write('$ ');
 
+// Make connection to the server
+// TODO: Change the IP address to your server IP address or the domain name
+// Example: https://John.com:3000
 const socket = new WebSocket('ws://34.207.190.242:3000');
 
+// Using
 term.onKey(e => {
     const { key, domEvent } = e;
     const printable = (
