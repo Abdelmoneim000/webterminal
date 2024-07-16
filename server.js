@@ -1,8 +1,8 @@
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
-const { Client } = require('ssh2');
-const env = require('dotenv')
+const { spawn } = require('child_process');
+const env = require('dotenv');
 
 env.config();
 
@@ -10,44 +10,44 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-
 wss.on('connection', (ws) => {
     console.log('A user connected');
 
-    // SSH connection configuration
-    const sshConfig = {
-        host: process.env.HOST,
-        port: 22,
-        username: process.env.USER,
-        privateKey: require('fs').readFileSync('../private')
-    };
+    // Spawn a bash shell process
+    const bash = spawn('bash');
 
-    const conn = new Client();
-    conn.on('ready', () => {
-        console.log('SSH connection established');
-        conn.shell((err, stream) => {
-            if (err) throw err;
+    // Handle data from the bash shell's stdout
+    bash.stdout.on('data', (data) => {
+        ws.send(data.toString());
+    });
 
-            stream.on('data', (data) => {
-                ws.send(data.toString());
-            });
+    // Handle data from the bash shell's stderr
+    bash.stderr.on('data', (data) => {
+        ws.send(data.toString());
+    });
 
-            ws.on('message', (message) => {
-                stream.write(message);
-            });
+    // Handle commands received from the client
+    ws.on('message', (command) => {
+        const commandString = command.toString().trim();
+        console.log('Received command:', commandString);
 
-            ws.on('close', () => {
-                conn.end();
-            });
-        });
-    }).connect(sshConfig);
+        // Write the command to the bash shell's stdin
+        bash.stdin.write(commandString + '\n');
+    });
 
-    conn.on('error', (err) => {
-        console.error('SSH connection error:', err);
-        ws.close();
+    // Handle the close event
+    ws.on('close', () => {
+        console.log('A user disconnected');
+        bash.kill(); // Ensure the bash process is terminated when the WebSocket connection is closed
+    });
+
+    // Handle the exit of the bash shell process
+    bash.on('close', (code) => {
+        console.log(`Bash shell exited with code ${code}`);
     });
 });
 
 server.listen(3000, () => {
     console.log('Server running on port 3000');
 });
+
